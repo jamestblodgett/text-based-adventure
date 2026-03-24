@@ -19,6 +19,11 @@ body {
     color: var(--text-color);
     font-family: Arial, sans-serif;
     margin: 0;
+    padding: 0;
+}
+
+/* Page content wrapper keeps the inner page padding, while header can touch the edges */
+.content {
     padding: 20px;
 }
 
