@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Java + HTML Demo</title>
+</head>
+<body>
+
+<h1>Java + HTML Demo</h1>
+
+<button onclick="callJava()">Call Java Server</button>
+<p id="output"></p>
+
+<script>
+function callJava() {
+  fetch("/hello")
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById("output").innerText = data.message;
+    });
+}
+</script>
+
+</body>
+</html>
