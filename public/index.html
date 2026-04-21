@@ -2,24 +2,64 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Java + HTML Demo</title>
+  <title>Text-based Adventure Game</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-<h1>Text-based Adventure game</h1>
+<h1>Text-based Adventure Game</h1>
 
-<button onclick="callJava()">Call Java Server</button>
-<div id="output"></div>
+<div id="game-output">
+  <p>Welcome to the adventure! What would you like to do?</p>
+  <p>Type 'start' to begin your journey.</p>
+</div>
+
+<div id="input-area">
+  <input type="text" id="user-input" placeholder="Enter your command..." autofocus>
+  <button onclick="sendInput()">Submit</button>
+</div>
+
+<div id="loading" style="display: none;">Processing...</div>
 
 <script>
-function callJava() {
-  fetch("/hello")
-    .then(r => r.json())
-    .then(data => {
-      document.getElementById("output").innerText = data.message;
-    });
+let gameStarted = false;
+
+function sendInput() {
+  const input = document.getElementById('user-input').value.trim();
+  if (!input) return;
+
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('user-input').disabled = true;
+
+  fetch('/game', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ input: input })
+  })
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('game-output').innerHTML = data.response.replace(/\n/g, '<br>');
+    document.getElementById('user-input').value = '';
+    document.getElementById('user-input').focus();
+  })
+  .catch(error => {
+    document.getElementById('game-output').innerHTML = 'Error: ' + error.message;
+  })
+  .finally(() => {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('user-input').disabled = false;
+  });
 }
+
+function handleKeyPress(event) {
+  if (event.key === 'Enter') {
+    sendInput();
+  }
+}
+
+document.getElementById('user-input').addEventListener('keypress', handleKeyPress);
 </script>
 
 </body>
