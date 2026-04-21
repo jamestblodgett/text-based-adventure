@@ -9,15 +9,18 @@
 
 <h1>Text-based Adventure Game</h1>
 
-<div id="game-output">
-  <p>Welcome to the adventure! What would you like to do?</p>
-  <p>Type 'start' to begin your journey.</p>
-</div>
-
 <div id="input-area">
   <input type="text" id="user-input" placeholder="Enter your command..." autofocus>
-  <button onclick="sendInput()">Submit</button>
+  <button onclick="sendInput()">>></button>
 </div>
+
+<div id="output">
+  <div id="game-output">
+  <p>Welcome to the adventure!</p>
+  <p>Type 'start' to begin your journey.</p>
+  </div>
+</div>
+
 
 <div id="loading" style="display: none;">Processing...</div>
 

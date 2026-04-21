@@ -16,6 +16,10 @@ body {
   padding-top: 50px;
 }
 
+p {
+  text-align: center;
+}
+
 h1 {
   font-size: 2.5rem;
   margin-bottom: 30px;
@@ -23,12 +27,20 @@ h1 {
   text-shadow: 0 0 10px var(--secondary);
 }
 
+input {
+  font-family: 'Cascadia Code', monospace;
+  background-color: var(--box-color);
+  color: var(--text);
+  border: 2px solid var(--primary);
+  font-size: 0.8rem;
+}
+
 button {
   background-color: var(--primary);
   border: none;
-  padding: 12px 25px;
-  font-size: 1.1rem;
-  border-radius: 6px;
+  padding: 3px 25px;
+  font-size: 0.9rem;
+  border-radius: 0;
   cursor: pointer;
   color: #000;
   transition: 0.2s ease;
@@ -40,17 +52,20 @@ button:hover {
 }
 
 #output {
+  text-align: left;
+  font-family: 'Cascadia Code', monospace;
   margin: 25px auto 0 auto;
   width: 80vw;
   height: 60vh;
   background-color: #1e1e1e;
   border: 2px solid var(--primary);
   border-radius: 8px;
-  padding: 15px;
+  padding: 10px;
   overflow-y: auto;
   color: var(--text-bright);
-  font-family: "Consolas", "Courier New", monospace;
   position: relative; /* REQUIRED */
+  line-height: 1.2;
+  white-space: pre-wrap;
 }
 
 /* Header bar */
@@ -87,10 +102,4 @@ button:hover {
 #output::before,
 #output::after {
   z-index: 10;
-}
-
-#output {
-  position: relative;
-  display: block;
-  z-index: 1;
 }
