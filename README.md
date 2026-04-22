@@ -1,5 +1,21 @@
 # Text-Based Adventure Game
 
+## Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Requirements](#requirements)
+- [How to Run the Game](#how-to-run-the-game)
+  - [1. Download and Extract](#1-download-and-extract)
+  - [2. Run the Game](#2-run-the-game)
+  - [3. Play the Game](#3-play-the-game)
+  - [4. Stop the Game](#4-stop-the-game)
+- [Game Commands](#game-commands)
+- [Troubleshooting](#troubleshooting)
+- [Project Structure](#project-structure)
+- [Development](#development)
+- [Conclusion](#conclusion)
+- [Installing JAVA](#installing-java)
+
 ## Overview
 This is my text-based adventure game project! It's a functional choose-your-own-adventure style game that runs in a web browser, such as google or edge, and is run with Java and Spark Java servers.
 
@@ -13,6 +29,7 @@ The game explains a scenario and a few options, and the player inputs their deci
 - No other installation required.
 
 ## Requirements
+- **Java JDK setup** Instructions are listed [below](#installing-java)
 - **Windows** (Only works on windows, no chrome-os, linux, or other programs)
 - **A decent computer** You need a computer that can run java, html, and other code simultaneously.
 - **Half a brai-** Nevermind, editor said to leave that part out.
@@ -70,3 +87,11 @@ I'm not telling you how to change the game you cheats.
 ## Conclusion
 #### Of course, I hope that each and every one of you playing will be able to have a blast playing this game. If you have any concerns about the game, have anything you would like to contribute, or just want to give feedback about the game, email me at: jamestblodgett@gmail.com
 #### Have a nice day, and feel free to check out my other projects and my profile at https://github.com/jamestblodgett.
+
+## Installing JAVA
+If you don't already have java installed on your device, then you will need to install it in order to play the game. I'm working on a way around this at the moment, but we'll have to see.
+- You may attempt this link, although it may not work.
+    - https://download.oracle.com/java/26/latest/jdk-26_windows-x64_bin.exe
+- **Download the JDK** If the link didn't work, it can be downloaded from Oracle at https://www.oracle.com/java/technologies/downloads.
+- The page provides intallment links for several options. Select JDK 26 or JDK 25, then select windows. Click the `Download` link listed below. Click the one that ends with `.exe`, which should match the one up above.
+- If you want to verify it was installed, open the "terminal" app in your device and type in `java -version` and it should ouput something showing the version you installed. Of course, if it doesn't work, there will be a bunch of red text saying that 'java' isn't recognized.
