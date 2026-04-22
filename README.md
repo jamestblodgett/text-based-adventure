@@ -22,17 +22,17 @@ This is my text-based adventure game project! It's a functional choose-your-own-
 The game explains a scenario and a few options, and the player inputs their decisions to progress through the story. It features puzzles, riddles, inventory management, memory games, and more!
 
 ### Features
-- Interactive text-based gameplay
-- Web-based program
-- Inventory system
-- Help and reset commands (as well as more commands that I won't tell you :D)
-- No other installation required.
+- *Interactive text-based gameplay*
+- *Web-based program*
+- *Inventory system*
+- *Help and reset commands (as well as more commands that I won't tell you :D)*
+- *No other installation required.*
 
 ### Requirements
-- **Java JDK setup** Instructions are listed [below](#installing-java)
-- **Windows** (Only works on windows, no chrome-os, linux, or other programs)
-- **A decent computer** You need a computer that can run java, html, and other code simultaneously.
-- **Half a brai-** Nevermind, editor said to leave that part out.
+- **Java JDK setup** *Instructions are listed [below](#installing-java)*
+- **Windows** *(Only works on windows, no chrome-os, linux, or other programs)*
+- **A decent computer** *You need a computer that can run java, html, and other code simultaneously.*
+- **Half a brai-** *Nevermind, editor said to leave that part out.*
 - **A GOOD ATTITUDE!!!**
 
 ### How to Run the Game
