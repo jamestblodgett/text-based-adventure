@@ -1,6 +1,17 @@
 @echo off
 cd /d "%~dp0"
 
+REM Check if bundled JDK exists
+if exist "jdk\jdk11\bin\java.exe" (
+    set JAVA_HOME=%~dp0jdk\jdk11
+    set PATH=%JAVA_HOME%\bin;%PATH%
+    echo Using bundled JDK...
+) else (
+    echo Bundled JDK not found. Please ensure Java 11+ is installed.
+    pause
+    exit /b 1
+)
+
 echo Compiling Java...
 javac -cp "lib/*" -d out src\Main.java
 

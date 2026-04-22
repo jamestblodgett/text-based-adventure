@@ -1,11 +1,19 @@
-import static spark.Spark.*;
 import java.nio.file.Paths;
+
 import com.google.gson.Gson;
+
+import static spark.Spark.get;
+import static spark.Spark.post;
+import static spark.Spark.staticFiles;
 
 public class Main {
     private static Gson gson = new Gson();
     private static String currentRoom = "start";
+    private static String [] inventory = new String[9];
 
+    // ---------------------------------------------
+    // Input/Output Handling. Main function.       |
+    // ---------------------------------------------
     public static void main(String[] args) {
         String publicDir = Paths.get("").toAbsolutePath().resolve("public").toString();
         staticFiles.externalLocation(publicDir);
@@ -41,148 +49,40 @@ public class Main {
         });
     }
 
+
+    // ---------------------------------------------
+    // Actual Game Logic                           |
+    // ---------------------------------------------
     public static String runGame(String input) {
         String response = "";
-
-        switch (currentRoom) {
-            case "start":
-                if (input.equals("start")) {
-                    currentRoom = "entrance";
-                    response = "You find yourself at the entrance of an ancient castle.\n" +
-                              "The massive wooden doors creak open before you.\n" +
-                              "You see a grand hallway with doors on either side.\n\n" +
-                              "What would you like to do?\n" +
-                              "1) Go left through the green door\n" +
-                              "2) Go right through the red door\n" +
-                              "3) Look around the entrance";
-                } else {
-                    response = "Welcome to the adventure! Type 'start' to begin your journey.";
+        if (input.equals("inventory")) {
+            if (inventory[0] == null) {
+                inventory[0] = "Really cool air";
+            }
+            for (int i = 0; i < inventory.length; i++) {
+                if (inventory[i] == null) {
+                    inventory[i] = "More air";
                 }
-                break;
-
-            case "entrance":
-                switch (input) {
-                    case "1":
-                    case "go left":
-                    case "green":
-                        currentRoom = "green_room";
-                        response = "You enter the green room. It's filled with lush plants and a mysterious glow.\n" +
-                                  "In the center, you see a pedestal with a shiny key on it.\n\n" +
-                                  "What would you like to do?\n" +
-                                  "1) Take the key\n" +
-                                  "2) Examine the plants\n" +
-                                  "3) Go back to the entrance";
-                        break;
-                    case "2":
-                    case "go right":
-                    case "red":
-                        currentRoom = "red_room";
-                        response = "You enter the red room. The walls are adorned with ancient tapestries.\n" +
-                                  "A suit of armor stands in the corner, and there's a locked chest on the floor.\n\n" +
-                                  "What would you like to do?\n" +
-                                  "1) Examine the armor\n" +
-                                  "2) Try to open the chest\n" +
-                                  "3) Go back to the entrance";
-                        break;
-                    case "3":
-                    case "look":
-                        response = "The entrance hall is grand and imposing. Torchlight flickers on the stone walls.\n" +
-                                  "You notice intricate carvings depicting heroic deeds.\n\n" +
-                                  "What would you like to do?\n" +
-                                  "1) Go left through the green door\n" +
-                                  "2) Go right through the red door\n" +
-                                  "3) Look around the entrance";
-                        break;
-                    default:
-                        response = "I don't understand that command. Please choose:\n" +
-                                  "1) Go left through the green door\n" +
-                                  "2) Go right through the red door\n" +
-                                  "3) Look around the entrance";
-                }
-                break;
-
-            case "green_room":
-                switch (input) {
-                    case "1":
-                    case "take":
-                    case "key":
-                        response = "You take the shiny key! It feels warm in your hand.\n" +
-                                  "This might be useful later.\n\n" +
-                                  "What would you like to do?\n" +
-                                  "1) Examine the plants\n" +
-                                  "2) Go back to the entrance";
-                        break;
-                    case "2":
-                    case "examine":
-                    case "plants":
-                        response = "The plants seem to glow with an inner light. They appear healthy and well-tended.\n" +
-                                  "You notice they form a pattern that looks like a door.\n\n" +
-                                  "What would you like to do?\n" +
-                                  "1) Take the key\n" +
-                                  "2) Examine the plants\n" +
-                                  "3) Go back to the entrance";
-                        break;
-                    case "3":
-                    case "back":
-                        currentRoom = "entrance";
-                        response = "You return to the entrance hall.\n\n" +
-                                  "What would you like to do?\n" +
-                                  "1) Go left through the green door\n" +
-                                  "2) Go right through the red door\n" +
-                                  "3) Look around the entrance";
-                        break;
-                    default:
-                        response = "I don't understand that command. Please choose:\n" +
-                                  "1) Take the key\n" +
-                                  "2) Examine the plants\n" +
-                                  "3) Go back to the entrance";
-                }
-                break;
-
-            case "red_room":
-                switch (input) {
-                    case "1":
-                    case "examine":
-                    case "armor":
-                        response = "The suit of armor is old but well-maintained. It looks like it could spring to life at any moment!\n" +
-                                  "You notice a small inscription on the helmet.\n\n" +
-                                  "What would you like to do?\n" +
-                                  "1) Examine the armor\n" +
-                                  "2) Try to open the chest\n" +
-                                  "3) Go back to the entrance";
-                        break;
-                    case "2":
-                    case "open":
-                    case "chest":
-                        response = "The chest is locked! You need a key to open it.\n" +
-                                  "Maybe there's one somewhere else in the castle.\n\n" +
-                                  "What would you like to do?\n" +
-                                  "1) Examine the armor\n" +
-                                  "2) Try to open the chest\n" +
-                                  "3) Go back to the entrance";
-                        break;
-                    case "3":
-                    case "back":
-                        currentRoom = "entrance";
-                        response = "You return to the entrance hall.\n\n" +
-                                  "What would you like to do?\n" +
-                                  "1) Go left through the green door\n" +
-                                  "2) Go right through the red door\n" +
-                                  "3) Look around the entrance";
-                        break;
-                    default:
-                        response = "I don't understand that command. Please choose:\n" +
-                                  "1) Examine the armor\n" +
-                                  "2) Try to open the chest\n" +
-                                  "3) Go back to the entrance";
-                }
-                break;
-
-            default:
-                response = "You find yourself in an unknown location. Something went wrong!";
+            }
+            response = "You are carrying:\n " + String.join(",\n ", inventory);
+        }
+        if (input.equals("help")) {
+            response = "Welcome to the text-adventure game!\nWhen you play, you will receive a prompt. Based on this prompt, you can enter a response in the box, and the game will continue based on what you entered. For example:\n\nYou are in a dark room with a green door and a red door. What do you do?\n1) Open the green door\n2) Open the red door\n3) Cry\n4) Check your inventory - this is always available\n\nIf you enter \"1\", the game will continue with you going through the green door. You can always enter \"inventory\" to check your inventory, \"Help\", which takes you to this page, or \"Hard-Reset\", which will reset the game. Don't do that.";
+        }
+        if (input.equals("hard-reset")) {
+            resetGame();
+            response = "Game reset. You are back at the start.";
         }
 
+        
+
+
+
         return response;
+    }
+    private static void resetGame() {
+        currentRoom = "start";
+        inventory = new String[9];
     }
 
     // Helper classes for JSON serialization
