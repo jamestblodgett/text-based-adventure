@@ -6,10 +6,13 @@ import static spark.Spark.get;
 import static spark.Spark.post;
 import static spark.Spark.staticFiles;
 
+import java.util.Arrays;
+
 public class Main {
     private static Gson gson = new Gson();
     private static String currentRoom = "start";
     private static String [] inventory = new String[9];
+    private static String [] opts = new String[5];
 
     // ---------------------------------------------
     // Input/Output Handling. Main function.       |
@@ -80,10 +83,29 @@ public class Main {
 
         return response;
     }
+
+    // Game Helper classes
     private static void resetGame() {
         currentRoom = "start";
         inventory = new String[9];
     }
+    public static String [] setOpts (String [] array, String ... opts){
+        array = new String[array.length];
+        Arrays.fill(array, "");
+
+        for (int i = 0; i < opts.length; i++){
+            array[i] = opts[i];
+        }
+        return array;
+    }
+
+    public static String addOpts (String response, String [] opts){
+        for (int i = 0; i < opts.length; i++) {
+            response += "\n" + (i + 1) + ") " + opts[i];
+        }
+        return response;
+    }
+
 
     // Helper classes for JSON serialization
     private static class GameInput {
