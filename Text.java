@@ -1,7 +1,7 @@
 import java.util.Scanner;
 import java.util.Arrays;
 
-public class Main {
+public class Text {
     private static String currentRoom = "start";
     private static String [] inventory = new String[9];
     private static String [] opts = new String[5];
