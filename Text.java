@@ -3,6 +3,7 @@ import java.util.Arrays;
 
 public class Text {
     private static String currentRoom = "start";
+    private static String subRoom = "";
     private static String [] inventory = new String[9];
     private static String [] opts = new String[5];
 
@@ -11,6 +12,11 @@ public class Text {
     // ---------------------------------------------
     public static void main(String[] args){
         Scanner scanner = new Scanner(System.in);
+        
+        //DEBUG
+        inventory[3] = "crowbar";
+        //DEBUG
+
         System.out.println("Welcome to the text-adventure game!\r\n" + //
                         "When you play, you will receive a prompt. Based on this prompt, you can enter a response in the box, and the game will continue based on what you entered. For example:\r\n" + //
                         "\r\n" + //
@@ -64,17 +70,51 @@ public class Text {
                         break;
                 }
                 break;
-
             case "room1":
-                opts = setOpts(opts, "Go back to the start", "Check out the plant","Go through the next door","Look out the window","Look under the table");
-                response += "\nThe next room has a single door, a small window, and a table with a potted plant on it. What a bizzare room.";
-                response = addOpts(response, opts);
-                switch (input){
-                    case 1:
-                        response += "\n The plant is in a green ceramic vase, and is a"
-                        currentRoom = "room1Plant";
+                if (subRoom.equals("room1Plant")){
+                    
+                    if (containsVal("crowbar",inventory)){
+                        opts = setOpts(opts, "Go Back", "Push over the vase", "Break the vase (crowbar)");
+                    } else {
+                        opts = setOpts(opts, "Go Back", "Push over the vase");
+                    } 
+                    response += response += "\nThe plant is in a green ceramic vase, and seems to be an unblossomed desert rose.";
+                    response = addOpts(response, opts);
+                    if (containsVal("crowbar", inventory)){
+                        switch (input){
+                        case "1":
+                            subRoom = "";
+                            break;
+                        case "2":
+                            response += "\nThe vase seems to be glued to the table.";
+                            subRoom = "room1Plant";
+                            break;
+                        }
+                    } else {
+                        switch (input){
+                            case "1":
+                                subRoom = "";
+                                break;
+                            case "2":
+                                response += "\nThe vase seems to be glued to the table.";
+                                subRoom = "room1Plant";
+                                break;
+                        }
+                    }
+                } else {
+                    opts = setOpts(opts, "Go back to the start", "Check out the plant","Go through the next door","Look out the window","Look under the table");
+                    response += "\nThe next room has a single door, a small window, and a table with a potted plant on it. What a bizzare room.";
+                    response = addOpts(response, opts);
+                    switch (input){
+                        case "1":
+                            response += "\n You go back to the start";
+                            currentRoom = "start";
+                        case "2":
+                            subRoom = "room1Plant";
 
+                    }
                 }
+                break;
         }
 
         return response;
@@ -96,8 +136,21 @@ public class Text {
 
     public static String addOpts (String response, String [] opts){
         for (int i = 0; i < opts.length; i++) {
-            response += "\n" + (i + 1) + ") " + opts[i];
+            if (!opts[i].equals("")){
+                response += "\n" + (i + 1) + ") " + opts[i];
+            } else {
+                break;
+            }
         }
         return response;
+    }
+
+    public static boolean containsVal (String val, String [] array){
+        for (int i = 0; i < array.length; i++){
+            if (array[i].equals(val)){
+                return true;
+            }
+        }
+        return false;
     }
 }
