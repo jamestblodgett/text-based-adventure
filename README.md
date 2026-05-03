@@ -4,7 +4,7 @@
 - [Overview](#overview)
 - [Features](#features)
 - [Requirements](#requirements)
-- [How to Run the Game](#how-to-run-the-game)
+- [How to Run the Game](#how-to-run-the-game)   <------- Go here to install it :D
 - [Game Commands](#game-commands)
 - [Troubleshooting](#troubleshooting)
 - [Differences for the Demo version](#differences-for-the-demo-version)
