@@ -5,21 +5,44 @@
 - [Features](#features)
 - [Requirements](#requirements)
 - [How to Run the Game](#how-to-run-the-game)
-  - [1. Download and Extract](#1-download-and-extract)
-  - [2. Run the Game](#2-run-the-game)
-  - [3. Play the Game](#3-play-the-game)
-  - [4. Stop the Game](#4-stop-the-game)
 - [Game Commands](#game-commands)
 - [Troubleshooting](#troubleshooting)
+- [Differences for the Demo version](#differences-for-the-demo-version)
 - [Project Structure](#project-structure)
 - [Development](#development)
 - [Conclusion](#conclusion)
 - [Installing JAVA](#installing-java)
 
 ## Overview
-This is my text-based adventure game project! It's a functional choose-your-own-adventure style game that runs in a web browser, such as google or edge, and is run with Java and Spark Java servers.
+This is my text-based adventure game project! It's a functional choose-your-own-adventure style game that runs in any web browser in windows, such as google or firefox, and is run with Java and Spark Java servers.
 
-The game explains a scenario and a few options, and the player inputs their decisions to progress through the story. It features puzzles, riddles, inventory management, memory games, and more!
+The game starts with an initial introduction:
+```
+Welcome to the text-adventure game!
+
+This game is a fun, puzzle-based choose your own adventure game, where each 
+    choice you make will lead you down a different path. There will be various challenges,
+    such as puzzles, riddles, memory-based games, and more. To play, simply type "Let it begin"
+    into the box above, then either click the "Enter" key, or press the button next to the box.
+  
+When you play, you will receive a prompt. Based on this prompt, you can enter a response
+    in the box, and the game will continue based on what you entered. For example:
+  
+You are in a room with a green door and a red door. What do you do?
+    1) Open the green door
+    2) Open the red door
+    3) Cry
+    4) Check your inventory - this action is always available.
+  
+You could then enter "1" in the box, which would have the program continue with you going
+    through the green door. You can Always enter "Inventory" to check your inventory, 
+    "Help", which will take you back to this page, or "Hard-Reset", which will reset the game.
+    Don't do that.
+  
+Now, keep your hands, feet, reproductive organs, and ticket to the afterlife in the vehicle
+    at all times, and enjoy the game!
+```
+it explains a scenario and a few options, and the player inputs their decisions to progress through the story. It features puzzles, riddles, inventory management, memory games, and more!
 
 ### Features
 - *Interactive text-based gameplay*
@@ -49,13 +72,13 @@ The game explains a scenario and a few options, and the player inputs their deci
 - Go into the folder
 - **Double-click `run.bat`** or right-click and select "Open"
 - A command window will appear showing cool stuff about the server startup
-- Your favorite web browser will automatically open to `http://localhost:4567`, which contains the game.
+- Your preffered web browser will automatically open to `http://localhost:4567`, which contains the game.
 
 #### 3. Play the Game
 - Read the instructions available to learn how to play.
 
 #### 4. Stop the Game
-- Close the command window to stop the server (MUST do this)
+- Close the command window (which opened when you started the game) to stop the server (MUST do this)
 - You can also close the browser, but the server continues until the command window is closed
 - If you try to re-open the game, but the command window is still open, then the game will *not* work. I spent 4 hours trying to troubleshoot this thinking it was a problem only to facepalm myself into the wall because it already worked.
 
@@ -71,6 +94,9 @@ Try all of these solutions in order if it isn't working. If you're still having 
 1. **CLOSE THE COMMAND WINDOW**, then close the browser tab, and then re-open the project.
 2. **Make sure all the files are in the same folder**, and that no other files were added in or modified.
 3. **Manually go to `http://localhost:4567`**
+
+## Differences for the Demo version
+This version is extremely short, has no "hidden" commands, and doesn't have any fancy features or characters. It only has 2 rooms, unlike the final game, which will have dozens. Everything else is identical, however.
 
 ## Project Structure
 - `src/Main.java` - Main game server code
