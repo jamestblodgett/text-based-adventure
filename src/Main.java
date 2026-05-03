@@ -1,12 +1,11 @@
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import com.google.gson.Gson;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
 import static spark.Spark.staticFiles;
-
-import java.util.Arrays;
 
 public class Main {
     private static Gson gson = new Gson();
@@ -29,6 +28,9 @@ public class Main {
             try {
                 // Parse the JSON input
                 GameInput gameInput = gson.fromJson(req.body(), GameInput.class);
+                if (gameInput == null || gameInput.input == null) {
+                    return gson.toJson(new GameResponse("No input received."));
+                }
                 String userInput = gameInput.input.toLowerCase().trim();
 
                 // Process the input through the game logic
@@ -59,107 +61,93 @@ public class Main {
     // ---------------------------------------------
     public static String runGame(String input) {
         String response = "";
+        String actionMessage = "";
+        
+        // Handle global commands first
         if (input.equals("inventory")) {
             inventory = inventoryDebug(inventory);
             response = "You are carrying:\n " + String.join(",\n ", inventory);
+            // return response;
         }
         if (input.equals("help")) {
             response = "Welcome to the text-adventure game!\nWhen you play, you will receive a prompt. Based on this prompt, you can enter a response in the box, and the game will continue based on what you entered. For example:\n\nYou are in a dark room with a green door and a red door. What do you do?\n1) Open the green door\n2) Open the red door\n3) Cry\n4) Check your inventory - this is always available\n\nIf you enter \"1\", the game will continue with you going through the green door. You can always enter \"inventory\" to check your inventory, \"Help\", which takes you to this page, or \"Hard-Reset\", which will reset the game. Don't do that.";
+            // return response;
         }
         if (input.equals("hard-reset")) {
             resetGame();
             response = "Game reset. You are back at the start.";
+            // return response;
         }
 
+        // Process input based on current room
         switch(currentRoom){
             case "start":
-                opts = setOpts(opts, "Go through the door");
-                response += "\nYou find yourself in a white, cube-shaped room. It is well-lit, but you don't have any idea where the light is coming from.\r\n" + //
-                    "Actually, come to think of it, you don't even know how you got here. Looking around the room, you only see a single door.\r\n";
-                response = addOpts(response, opts);
-                switch (input) {
-                    case "1":
-                        response += "\nYou go through the door.";
-                        currentRoom = "room1";
-                        break;
+                if (input.equals("1")) {
+                    actionMessage = "\nYou go through the door.";
+                    currentRoom = "room1";
                 }
                 break;
             case "room1":
-
-                if (subRoom.equals("room1Plant")){
-                    if (containsVal("crowbar",inventory) && !containsVal("key", inventory)){
-                        opts = setOpts(opts, "Go Back", "Push over the vase", "Break the vase (crowbar)");
-                    } else {
-                        opts = setOpts(opts, "Go Back", "Push over the vase");
-                    }
-                    
-                    if (containsVal("key", inventory)) response += "\nThe plant was in a green ceramic vase before you broke it, and seems to be an unblossomed desert rose.";
-                    else {
-                        response += "\nThe plant is in a green ceramic vase, and seems to be an unblossomed desert rose.";
-                    }
-                    response = addOpts(response, opts);
-                    if (containsVal("crowbar", inventory ) && !containsVal("key", inventory)){
-                        switch (input){
-                        case "1":
-                            subRoom = "";
-                            break;
-                        case "2":
-                            response += "\nThe vase seems to be glued to the table.";
-                            subRoom = "room1Plant";
-                            break;
-                        case "3":
-                            response += "\nYou find a key in the broken shards of the vase.";
-                            inventory[inventory.length-1] = "key";
-                        }
-                    } else {
-                        switch (input){
+                if (subRoom.equals("room1Plant")) {
+                    if (containsVal("crowbar", inventory) && !containsVal("key", inventory)) {
+                        switch (input) {
                             case "1":
                                 subRoom = "";
                                 break;
                             case "2":
-                                response += "\nThe vase seems to be glued to the table.";
-                                subRoom = "room1Plant";
+                                actionMessage = "\nThe vase seems to be glued to the table.";
                                 break;
-                            
+                            case "3":
+                                actionMessage = "\nYou find a key in the broken shards of the vase.";
+                                inventory = inventoryDebug(inventory);
+                                for (int i = inventory.length - 1; i >= 0; i--) {
+                                    if (inventory[i].equals("-")) {
+                                        inventory[i] = "key";
+                                        break;
+                                    }
+                                }
+                                break;
                         }
-                    }
-                } else if (subRoom.equals("window")){
-                    response += "\nOutside the window you see a desert, with small dry bushes and nothing else remotely alive. There is a crowbar on the ground, just out of reach.";
-                    if (containsVal("string", inventory)){
-                        opts = setOpts(opts, "Go back", "Grab the crowbar (String)");
-                        response = addOpts(response, opts);
-                        switch(input){
+                    } else {
+                        switch (input) {
                             case "1":
-                                currentRoom = "room1";
                                 subRoom = "";
-                                response += "\nYou go back";
                                 break;
                             case "2":
-                                currentRoom = "room1";
+                                actionMessage = "\nThe vase seems to be glued to the table.";
+                                break;
+                        }
+                    }
+                } else if (subRoom.equals("window")) {
+                    if (containsVal("string", inventory)) {
+                        switch(input) {
+                            case "1":
+                                actionMessage = "\nYou go back.";
                                 subRoom = "";
-                                response += "\nYou use the string to pull the crowbar to yourself. The string breaks, but you grab the crowbar in time.";
+                                break;
+                            case "2":
+                                actionMessage = "\nYou use the string to pull the crowbar to yourself. The string breaks, but you grab the crowbar in time.";
                                 inventory = removeItem("string", inventory);
-                                inventory[inventory.length-1] = "crowbar";
+                                inventory = inventoryDebug(inventory);
+                                for (int i = inventory.length - 1; i >= 0; i--) {
+                                    if (inventory[i].equals("-")) {
+                                        inventory[i] = "crowbar";
+                                        break;
+                                    }
+                                }
+                                subRoom = "";
                                 break;
                         }
                     } else {
-                        opts = setOpts(opts, "Go back");
-                        response = addOpts(response, opts);
-                        switch(input){
-                            case "1":
-                                subRoom = "";
-                                currentRoom = "room1";
-                                response += "\nYou go back";
-                                break;
+                        if (input.equals("1")) {
+                            actionMessage = "\nYou go back.";
+                            subRoom = "";
                         }
                     }
                 } else {
-                    opts = setOpts(opts, "Go back to the start", "Check out the plant","Go through the next door","Look out the window","Look under the table");
-                    response += "\nThe next room has a single door, a small window, and a table with a potted plant on it. What a bizzare room.";
-                    response = addOpts(response, opts);
-                    switch (input){
+                    switch (input) {
                         case "1":
-                            response += "\n You go back to the start";
+                            actionMessage = "\nYou go back to the start.";
                             currentRoom = "start";
                             subRoom = "";
                             break;
@@ -167,36 +155,83 @@ public class Main {
                             subRoom = "room1Plant";
                             break;
                         case "3":
-                                if (containsVal("key", inventory)){
-                                    response += "\nYou unlock the door and pass through.";
-                                    inventory = removeItem("key", inventory);
-                                    currentRoom = "room2";
-                                    subRoom = "";
-                                } else {
-                                    response += "\nThe door seems to be locked, you'll need to find a key.";
-                                    subRoom = "";
-                                }
-                        break;
+                            if (containsVal("key", inventory)) {
+                                actionMessage = "\nYou unlock the door and pass through.";
+                                inventory = removeItem("key", inventory);
+                                currentRoom = "room2";
+                                subRoom = "";
+                            } else {
+                                actionMessage = "\nThe door seems to be locked, you'll need to find a key.";
+                            }
+                            break;
                         case "4":
+                            actionMessage = "\nYou look out the window.";
                             subRoom = "window";
-                            response += "\nYou look out the window.";
                             break;
                         case "5":
-                            if (containsVal("string", inventory)){
-                                response += "\nThere is nothing left under the table.";
+                            if (containsVal("string", inventory)) {
+                                actionMessage = "\nThere is nothing left under the table.";
                             } else {
-                                response += "\nYou look under the table and find a small length of string.";
-                                inventory[inventory.length-1] = "string";
+                                actionMessage = "\nYou look under the table and find a small length of string.";
+                                inventory = inventoryDebug(inventory);
+                                for (int i = inventory.length - 1; i >= 0; i--) {
+                                    if (inventory[i].equals("-")) {
+                                        inventory[i] = "string";
+                                        break;
+                                    }
+                                }
                             }
                             break;
                     }
                 }
                 break;
-                case "room2":
-                    opts = setOpts(opts, "","","","","");
-                    response += "\nYou have finished the Demo version! Thanks for playing!";
-                    break;
-            }
+            case "room2":
+                // No inputs processed for room2, it's the end
+                break;
+        }
+
+        // Now generate response based on current state
+        response += actionMessage;
+        switch(currentRoom){
+            case "start":
+                opts = setOpts(opts, "Go through the door");
+                response += "\nYou find yourself in a white, cube-shaped room. It is well-lit, but you don't have any idea where the light is coming from.\r\n" + //
+                    "Actually, come to think of it, you don't even know how you got here. Looking around the room, you only see a single door.\r\n";
+                response = addOpts(response, opts);
+                break;
+            case "room1":
+                if (subRoom.equals("room1Plant")) {
+                    if (containsVal("crowbar", inventory) && !containsVal("key", inventory)) {
+                        opts = setOpts(opts, "Go Back", "Push over the vase", "Break the vase (crowbar)");
+                    } else {
+                        opts = setOpts(opts, "Go Back", "Push over the vase");
+                    }
+                    
+                    if (containsVal("key", inventory)) {
+                        response += "\nThe plant was in a green ceramic vase before you broke it, and seems to be an unblossomed desert rose.";
+                    } else {
+                        response += "\nThe plant is in a green ceramic vase, and seems to be an unblossomed desert rose.";
+                    }
+                    response = addOpts(response, opts);
+                } else if (subRoom.equals("window")) {
+                    response += "\nOutside the window you see a desert, with small dry bushes and nothing else remotely alive. There is a crowbar on the ground, just out of reach.";
+                    if (containsVal("string", inventory)) {
+                        opts = setOpts(opts, "Go back", "Grab the crowbar (String)");
+                    } else {
+                        opts = setOpts(opts, "Go back");
+                    }
+                    response = addOpts(response, opts);
+                } else {
+                    opts = setOpts(opts, "Go back to the start", "Check out the plant","Go through the next door","Look out the window","Look under the table");
+                    response += "\nThe next room has a single door, a small window, and a table with a potted plant on it. What a bizzare room.";
+                    response = addOpts(response, opts);
+                }
+                break;
+            case "room2":
+                opts = setOpts(opts, "","","","","");
+                response += "\nYou have finished the Demo version! Thanks for playing!";
+                break;
+        }
 
         return response;
     }
@@ -274,5 +309,17 @@ public class Main {
             }
         }
         return array;
+    }
+
+    private static class GameInput {
+        String input;
+    }
+
+    private static class GameResponse {
+        String response;
+
+        GameResponse(String response) {
+            this.response = response;
+        }
     }
 }

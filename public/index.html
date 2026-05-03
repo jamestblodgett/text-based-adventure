@@ -67,7 +67,6 @@ function sendInput() {
   .then(data => {
     document.getElementById('game-output').innerHTML = data.response.replace(/\n/g, '<br>');
     document.getElementById('user-input').value = '';
-    document.getElementById('user-input').focus();
   })
   .catch(error => {
     document.getElementById('game-output').innerHTML = 'Error: ' + error.message;
@@ -75,16 +74,18 @@ function sendInput() {
   .finally(() => {
     document.getElementById('loading').style.display = 'none';
     document.getElementById('user-input').disabled = false;
+    document.getElementById('user-input').focus();
   });
 }
 
 function handleKeyPress(event) {
   if (event.key === 'Enter') {
+    event.preventDefault();
     sendInput();
   }
 }
 
-document.getElementById('user-input').addEventListener('keypress', handleKeyPress);
+document.getElementById('user-input').addEventListener('keydown', handleKeyPress);
 </script>
 
 </body>
