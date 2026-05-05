@@ -68,19 +68,21 @@ public class Main {
         foundItems = inventoryDebug(foundItems);
         
         // Handle global commands first
-        if (input.equals("inventory")) {
-            inventory = inventoryDebug(inventory);
-            response = "You are carrying:\n " + String.join(",\n ", inventory);
-            // return response;
-        }
-        if (input.equals("help")) {
-            response = "Welcome to the text-adventure game!\nWhen you play, you will receive a prompt. Based on this prompt, you can enter a response in the box, and the game will continue based on what you entered. For example:\n\nYou are in a dark room with a green door and a red door. What do you do?\n1) Open the green door\n2) Open the red door\n3) Cry\n4) Check your inventory - this is always available\n\nIf you enter \"1\", the game will continue with you going through the green door. You can always enter \"inventory\" to check your inventory, \"Help\", which takes you to this page, or \"Hard-Reset\", which will reset the game. Don't do that.";
-            // return response;
-        }
-        if (input.equals("hard-reset")) {
-            resetGame();
-            response = "Game reset. You are back at the start.";
-            // return response;
+        if (true) {
+            if (input.equals("inventory")) {
+                inventory = inventoryDebug(inventory);
+                response = "You are carrying:\n " + String.join(",\n ", inventory);
+                // return response;
+            }
+            if (input.equals("help")) {
+                response = "Welcome to the text-adventure game!\nWhen you play, you will receive a prompt. Based on this prompt, you can enter a response in the box, and the game will continue based on what you entered. For example:\n\nYou are in a dark room with a green door and a red door. What do you do?\n1) Open the green door\n2) Open the red door\n3) Cry\n4) Check your inventory - this is always available\n\nIf you enter \"1\", the game will continue with you going through the green door. You can always enter \"inventory\" to check your inventory, \"Help\", which takes you to this page, or \"Hard-Reset\", which will reset the game. Don't do that.";
+                // return response;
+            }
+            if (input.equals("hard-reset")) {
+                resetGame();
+                response = "Game reset. You are back at the start.";
+                // return response;
+            }
         }
 
         // Process input based on current room
@@ -150,7 +152,7 @@ public class Main {
                             if (containsVal("key", inventory, foundItems)) {
                                 actionMessage = "\nYou unlock the door and pass through.";
                                 inventory = removeItem("key", inventory);
-                                currentRoom = "room2";
+                                currentRoom = "chute";
                                 subRoom = "";
                             } else {
                                 actionMessage = "\nThe door seems to be locked, you'll need to find a key.";
@@ -171,8 +173,17 @@ public class Main {
                     }
                 }
                 break;
-            case "room2":
-                // No inputs processed for room2, it's the end
+            case "chute":
+                switch(input) {
+                    case "1":
+                        actionMessage = "\nYou go back to the previous room.";
+                        currentRoom = "room1";
+                        break;
+                    case "2":
+                        actionMessage = "\nYou jump down the chute";
+                        currentRoom = "room2";
+                        break;
+                }
                 break;
         }
 
@@ -213,9 +224,15 @@ public class Main {
                     response = addOpts(response, opts);
                 }
                 break;
+            case "chute":
+                opts = setOpts(opts, "Go back","Jump down");
+                response += "\nThe door reveals a drop, with the same plaster-white walls, directly down into darkness. You suppose the only way is down, if you're ready.";
+                response = addOpts(response, opts);
+                break;
             case "room2":
-                opts = setOpts(opts, "","","","","");
-                response += "\nYou have finished the Demo version! Thanks for playing!";
+                opts = setOpts(opts, "Go back","Jump down");
+                response += "\nThe door reveals a drop, with the same plaster-white walls, directly down into darkness. You suppose the only way is down, if you're ready.";
+                response = addOpts(response, opts);
                 break;
         }
 
