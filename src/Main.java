@@ -12,6 +12,7 @@ public class Main {
     private static String currentRoom = "start";
     private static String subRoom = "";
     private static String [] inventory = new String[9];
+    private static String [] foundItems = new String[30];
     private static String [] opts = new String[5];
 
     // ---------------------------------------------
@@ -62,6 +63,9 @@ public class Main {
     public static String runGame(String input) {
         String response = "";
         String actionMessage = "";
+
+        inventory = inventoryDebug(inventory);
+        foundItems = inventoryDebug(foundItems);
         
         // Handle global commands first
         if (input.equals("inventory")) {
@@ -89,7 +93,7 @@ public class Main {
                 break;
             case "room1":
                 if (subRoom.equals("room1Plant")) {
-                    if (containsVal("crowbar", inventory) && !containsVal("key", inventory)) {
+                    if (containsVal("crowbar", inventory, foundItems)) {
                         switch (input) {
                             case "1":
                                 subRoom = "";
@@ -99,13 +103,7 @@ public class Main {
                                 break;
                             case "3":
                                 actionMessage = "\nYou find a key in the broken shards of the vase.";
-                                inventory = inventoryDebug(inventory);
-                                for (int i = inventory.length - 1; i >= 0; i--) {
-                                    if (inventory[i].equals("-")) {
-                                        inventory[i] = "key";
-                                        break;
-                                    }
-                                }
+                                inventory = addItem("key", inventory, foundItems);
                                 break;
                         }
                     } else {
@@ -119,7 +117,7 @@ public class Main {
                         }
                     }
                 } else if (subRoom.equals("window")) {
-                    if (containsVal("string", inventory)) {
+                    if (containsVal("string", inventory, foundItems)) {
                         switch(input) {
                             case "1":
                                 actionMessage = "\nYou go back.";
@@ -128,13 +126,7 @@ public class Main {
                             case "2":
                                 actionMessage = "\nYou use the string to pull the crowbar to yourself. The string breaks, but you grab the crowbar in time.";
                                 inventory = removeItem("string", inventory);
-                                inventory = inventoryDebug(inventory);
-                                for (int i = inventory.length - 1; i >= 0; i--) {
-                                    if (inventory[i].equals("-")) {
-                                        inventory[i] = "crowbar";
-                                        break;
-                                    }
-                                }
+                                inventory = addItem("crowbar", inventory, foundItems);
                                 subRoom = "";
                                 break;
                         }
@@ -155,7 +147,7 @@ public class Main {
                             subRoom = "room1Plant";
                             break;
                         case "3":
-                            if (containsVal("key", inventory)) {
+                            if (containsVal("key", inventory, foundItems)) {
                                 actionMessage = "\nYou unlock the door and pass through.";
                                 inventory = removeItem("key", inventory);
                                 currentRoom = "room2";
@@ -169,17 +161,11 @@ public class Main {
                             subRoom = "window";
                             break;
                         case "5":
-                            if (containsVal("string", inventory)) {
+                            if (containsVal("string", inventory, foundItems)) {
                                 actionMessage = "\nThere is nothing left under the table.";
                             } else {
                                 actionMessage = "\nYou look under the table and find a small length of string.";
-                                inventory = inventoryDebug(inventory);
-                                for (int i = inventory.length - 1; i >= 0; i--) {
-                                    if (inventory[i].equals("-")) {
-                                        inventory[i] = "string";
-                                        break;
-                                    }
-                                }
+                                inventory = addItem("string", inventory, foundItems);
                             }
                             break;
                     }
@@ -201,13 +187,13 @@ public class Main {
                 break;
             case "room1":
                 if (subRoom.equals("room1Plant")) {
-                    if (containsVal("crowbar", inventory) && !containsVal("key", inventory)) {
+                    if (containsVal("crowbar", inventory, foundItems)) {
                         opts = setOpts(opts, "Go Back", "Push over the vase", "Break the vase (crowbar)");
                     } else {
                         opts = setOpts(opts, "Go Back", "Push over the vase");
                     }
                     
-                    if (containsVal("key", inventory)) {
+                    if (containsVal("key", inventory, foundItems)) {
                         response += "\nThe plant was in a green ceramic vase before you broke it, and seems to be an unblossomed desert rose.";
                     } else {
                         response += "\nThe plant is in a green ceramic vase, and seems to be an unblossomed desert rose.";
@@ -215,7 +201,7 @@ public class Main {
                     response = addOpts(response, opts);
                 } else if (subRoom.equals("window")) {
                     response += "\nOutside the window you see a desert, with small dry bushes and nothing else remotely alive. There is a crowbar on the ground, just out of reach.";
-                    if (containsVal("string", inventory)) {
+                    if (containsVal("string", inventory, foundItems) ) {
                         opts = setOpts(opts, "Go back", "Grab the crowbar (String)");
                     } else {
                         opts = setOpts(opts, "Go back");
@@ -241,7 +227,9 @@ public class Main {
         currentRoom = "start";
         subRoom = "";
         inventory = new String[9];
+        foundItems = new String[30];
         inventory = inventoryDebug(inventory);
+        foundItems = inventoryDebug(foundItems);
     }
 
     public static String [] setOpts (String [] array, String ... opts){
@@ -265,10 +253,16 @@ public class Main {
         return response;
     }
 
-    public static boolean containsVal (String val, String [] array){
+    public static boolean containsVal (String val, String [] array, String [] foundItems){
         array = inventoryDebug(array);
+        foundItems = inventoryDebug(foundItems);
         for (int i = 0; i < array.length; i++){
             if (array[i].equals(val)){
+                return true;
+            }
+        }
+        for (int i = 0; i < foundItems.length; i++){
+            if (foundItems[i].equals(val)){
                 return true;
             }
         }
@@ -309,6 +303,37 @@ public class Main {
             }
         }
         return array;
+    }
+
+    public static String[] addItem(String item, String[] inventory, String[] foundItems) {
+        // Check if item has already been collected (prevent re-collection)
+        for (int i = 0; i < foundItems.length; i++) {
+            if (foundItems[i] != null && foundItems[i].equals(item)) {
+                return inventory;  // Item already collected, do nothing
+            }
+        }
+        
+        // Find an empty slot in inventory and add the item
+        for (int i = 0; i < inventory.length; i++) {
+            if (inventory[i].equals("-")) {
+                inventory[i] = item;
+                break;
+            }
+        }
+        
+        // Mark the item as collected in foundItems (add to first available slot)
+        for (int i = 0; i < foundItems.length; i++) {
+            if (foundItems[i] == null || foundItems[i].equals("-")) {
+                foundItems[i] = item;
+                break;
+            }
+        }
+        
+        // Optional: Clean up arrays (ensure consistency)
+        inventory = inventoryDebug(inventory);
+        foundItems = inventoryDebug(foundItems);
+        
+        return inventory;
     }
 
     private static class GameInput {
