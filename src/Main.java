@@ -93,7 +93,7 @@ public class Main {
                 break;
             case "room1":
                 if (subRoom.equals("room1Plant")) {
-                    if (containsVal("crowbar", inventory, foundItems)) {
+                    if (containsVal("crowbar", inventory, foundItems) && !containsVal("key", inventory, foundItems)) {
                         switch (input) {
                             case "1":
                                 subRoom = "";
@@ -187,7 +187,7 @@ public class Main {
                 break;
             case "room1":
                 if (subRoom.equals("room1Plant")) {
-                    if (containsVal("crowbar", inventory, foundItems)) {
+                    if (containsVal("crowbar", inventory, foundItems) && !containsVal("key", inventory, foundItems)) {
                         opts = setOpts(opts, "Go Back", "Push over the vase", "Break the vase (crowbar)");
                     } else {
                         opts = setOpts(opts, "Go Back", "Push over the vase");
