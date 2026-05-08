@@ -69,19 +69,26 @@ public class Main {
         
         // Handle global commands first
         if (true) {
-            if (input.equals("inventory")) {
+            if (input.startsWith("skipto:")) {
+                String targetRoom = input.substring(input.indexOf(":") + 1).trim();
+                if (!targetRoom.isEmpty()) {
+                    currentRoom = targetRoom;
+                    subRoom = "";
+                    response = "Skipping to " + targetRoom + ".";
+                } else {
+                    response = "Skipto command requires a room name, e.g. 'skipto: room1'.";
+                }
+            } else if (input.equals("inventory") || input.equals("i") || input.equals("check inventory")) {
                 inventory = inventoryDebug(inventory);
                 response = "You are carrying:\n " + String.join(",\n ", inventory);
-                // return response;
-            }
-            if (input.equals("help")) {
-                response = "Welcome to the text-adventure game!\nWhen you play, you will receive a prompt. Based on this prompt, you can enter a response in the box, and the game will continue based on what you entered. For example:\n\nYou are in a dark room with a green door and a red door. What do you do?\n1) Open the green door\n2) Open the red door\n3) Cry\n4) Check your inventory - this is always available\n\nIf you enter \"1\", the game will continue with you going through the green door. You can always enter \"inventory\" to check your inventory, \"Help\", which takes you to this page, or \"Hard-Reset\", which will reset the game. Don't do that.";
-                // return response;
-            }
-            if (input.equals("hard-reset")) {
+            } else if (input.equals("foundItems") ||  input.equals("f")) {
+                foundItems = inventoryDebug(foundItems);
+                response = "Items you've found:\n " + String.join(",\n ", foundItems);
+            } else if (input.equals("help") || input.equals("h") || input.equals("?")) {
+                response = "Welcome to the text-adventure game!\nWhen you play, you will receive a prompt. Based on this prompt, you can enter a response in the box, and the game will continue based on what you entered. For example:\n\nYou are in a dark room with a green door and a red door. What do you do?\n1) Open the green door\n2) Open the red door\n3) Cry\n4) Check your inventory - this is always available\n\nIf you enter \"1\", the game will continue with you going through the green door. You can always enter \"inventory\" to check your inventory, \"foundItems\" to check your total found items, \"Help\", which takes you to this page, or \"Hard-Reset\", which will reset the game. Don't do that.";
+            } else if (input.equals("hard-reset")) {
                 resetGame();
                 response = "Game reset. You are back at the start.";
-                // return response;
             }
         }
 
@@ -95,7 +102,7 @@ public class Main {
                 break;
             case "room1":
                 if (subRoom.equals("room1Plant")) {
-                    if (containsVal("crowbar", inventory, foundItems)) {
+                    if (containsVal("crowbar", inventory, foundItems) && !containsVal("key", inventory, foundItems)) {
                         switch (input) {
                             case "1":
                                 subRoom = "";
@@ -185,6 +192,37 @@ public class Main {
                         break;
                 }
                 break;
+            case "room2":
+                switch(input) {
+                    case "1":
+                        actionMessage = "\nYou leave the room";
+                        currentRoom = "forest1";
+                        break;
+                    case "2":
+                        actionMessage = "\nYou look out the window and see that you're now in a thick, green forest. How?!?";
+                        break;
+                    case "3":
+                        actionMessage = "\nThe paper has writing on it: \"Find the cone\". What's that supposed to mean?";
+                        break;
+                    case "4":
+                        if (containsVal("room2-underTable-Coin", foundItems, foundItems)) {
+                            actionMessage = "\nThere is nothing left under the table.";
+                        } else {
+                            actionMessage = "\nYou look under the table and find an iron coin.";
+                            inventory = addItem("iron coin", inventory, foundItems);
+                            foundItems = addItem("room2-underTable-Coin", foundItems, foundItems);
+                        }
+                        break;
+                    case "5":
+                        if (containsVal("room2-dirt-Coin", foundItems, foundItems)) {
+                            actionMessage = "\nYou look in the dirt but don't find anything else of interest.";
+                        } else {
+                            actionMessage = "\nYou look in the dirt and find a small Iron Coin.";
+                            inventory = addItem("Iron Coin", inventory, foundItems);
+                            foundItems = addItem("room2-dirt-Coin", foundItems, foundItems);
+                        }
+                        break;
+                }
         }
 
         // Now generate response based on current state
@@ -198,7 +236,7 @@ public class Main {
                 break;
             case "room1":
                 if (subRoom.equals("room1Plant")) {
-                    if (containsVal("crowbar", inventory, foundItems)) {
+                    if (containsVal("crowbar", inventory, foundItems) && !containsVal("key", inventory, foundItems)) {
                         opts = setOpts(opts, "Go Back", "Push over the vase", "Break the vase (crowbar)");
                     } else {
                         opts = setOpts(opts, "Go Back", "Push over the vase");
@@ -212,7 +250,7 @@ public class Main {
                     response = addOpts(response, opts);
                 } else if (subRoom.equals("window")) {
                     response += "\nOutside the window you see a desert, with small dry bushes and nothing else remotely alive. There is a crowbar on the ground, just out of reach.";
-                    if (containsVal("string", inventory, foundItems) ) {
+                    if (containsVal("string", inventory, foundItems) && !containsVal("crowbar", inventory, foundItems)) {
                         opts = setOpts(opts, "Go back", "Grab the crowbar (String)");
                     } else {
                         opts = setOpts(opts, "Go back");
@@ -230,8 +268,8 @@ public class Main {
                 response = addOpts(response, opts);
                 break;
             case "room2":
-                opts = setOpts(opts, "Go back","Jump down");
-                response += "\nThe door reveals a drop, with the same plaster-white walls, directly down into darkness. You suppose the only way is down, if you're ready.";
+                opts = setOpts(opts, "Leave the room","Look out the window","Look at the paper","Look under the table", "Look in the dirt");
+                response += "\nYou land in a room, but instead of white walls, the walls are now made from wood, and the floor appears to be made from dirt. There is a door, a window, and a table with a small piece of paper left on it. The window has no glass.";
                 response = addOpts(response, opts);
                 break;
         }
