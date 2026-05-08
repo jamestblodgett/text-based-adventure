@@ -1,19 +1,43 @@
 ﻿:root {
-  --bg: #060b41;
-  --primary: #ffb300;
-  --secondary: #ccc900;
-  --complimentary: #00d4ff;
+  --text-color: rgb(255,179,0);
+  --text-shadow: 0 0 10px var(--text-color);
+  --text-shadow: 0 0 10px color-mix(in srgb, var(--text-color), rgb(0, 0, 0) 10%);
+  --primary: #7a7466;
+  --highlight: #00d4ff;
+  --input-box: #1e1e1e;
   --text: #e6e6e6;
-  --text-bright: #ffffff;
-  --box-color: #1e1e1e;
+}
+
+.background-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
 }
 
 body {
-  background-color: var(--bg);
   color: var(--text);
   font-family: "Consolas", "Courier New", monospace;
   text-align: center;
   padding-top: 50px;
+}
+
+/*style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--input-box); border: 2px solid var(--highlight); padding: 20px; z-index: 1000;*/
+/*TODO*/
+
+.settings-menu {
+  position: fixed;
+  top: 20%;
+  right: 20%;
+  transform: translate(-50%, -50%);
+  background-color: var(--highlight);
+  border-radius: 8px;
+  padding: 10px 20px;
+  display: none;
+  z-index: 20;
 }
 
 p {
@@ -23,20 +47,20 @@ p {
 h1 {
   font-size: 2.5rem;
   margin-bottom: 30px;
-  color: var(--primary);
-  text-shadow: 0 0 10px var(--secondary);
+  color: var(--text-color);
+  text-shadow: var(--text-shadow);
 }
 
 input {
   font-family: 'Cascadia Code', monospace;
-  background-color: var(--box-color);
+  background-color: var(--input-box);
   color: var(--text);
-  border: 2px solid var(--primary);
+  border: 2px solid var(--highlight);
   font-size: 0.8rem;
 }
 
 button {
-  background-color: var(--primary);
+  background-color: var(--highlight);
   border: none;
   padding: 3px 25px;
   font-size: 0.9rem;
@@ -47,7 +71,7 @@ button {
 }
 
 button:hover {
-  background-color: var(--secondary);
+  background-color: hsl(from var(--highlight) h s calc(1 - 10%));
   transform: scale(1.05);
 }
 
@@ -58,48 +82,12 @@ button:hover {
   width: 80vw;
   height: 60vh;
   background-color: #1e1e1e;
-  border: 2px solid var(--primary);
+  border: 2px solid var(--highlight);
   border-radius: 8px;
   padding: 10px;
   overflow-y: auto;
-  color: var(--text-bright);
+  color: var(--text);
   position: relative; /* REQUIRED */
   line-height: 1.2;
   white-space: pre-wrap;
-}
-
-/* Header bar */
-#output::before {
-  content: "";
-  position: absolute;
-  top: -32px;
-  left: 0;
-  width: 100%;
-  height: 30px;
-  background-color: #2d2d2d;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  border: 2px solid var(--primary);
-  border-bottom: none;
-}
-
-/* Window dots */
-#output::after {
-  content: "";
-  position: absolute;
-  top: -22px;
-  left: 15px;
-  width: 40px;
-  height: 12px;
-  background:
-    radial-gradient(circle, #ff5f56 60%, transparent 61%) 0 0,
-    radial-gradient(circle, #ffbd2e 60%, transparent 61%) 14px 0,
-    radial-gradient(circle, #27c93f 60%, transparent 61%) 28px 0;
-  background-size: 12px 12px;
-  background-repeat: no-repeat;
-}
-
-#output::before,
-#output::after {
-  z-index: 10;
 }
