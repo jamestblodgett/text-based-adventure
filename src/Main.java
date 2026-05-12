@@ -78,6 +78,14 @@ public class Main {
                 } else {
                     response = "Skipto command requires a room name, e.g. 'skipto: room1'.";
                 }
+            } else if (input.startsWith("additem:")) {
+                String item = input.substring(input.indexOf(":") + 1).trim();
+                if (!item.isEmpty()) {
+                    inventory = addItem(item, inventory, foundItems);
+                    response = "Item added to inventory: " + item;
+                } else {
+                    response = "additem command requires an item name, e.g. 'addItem: sword'.";
+                }
             } else if (input.equals("inventory") || input.equals("i") || input.equals("check inventory")) {
                 inventory = inventoryDebug(inventory);
                 response = "You are carrying:\n " + String.join(",\n ", inventory);
@@ -222,7 +230,53 @@ public class Main {
                             foundItems = addItem("room2-dirt-Coin", foundItems, foundItems);
                         }
                         break;
-                }
+                    }
+                    break;
+                case "forest1":
+                    if (subRoom.equals("stump")) {
+                    } else if (subRoom.equals("river")) {
+                        if (containsVal("bucket", inventory, foundItems)) {
+                            switch (input) {
+                            case "1":
+                                actionMessage = "\nYou go back to the clearing.";
+                                subRoom = "";
+                                break;
+                            case "2":
+                                actionMessage = "\nYou pick up a smooth stone from the riverbed.";
+                                inventory = addItem("smooth stone", inventory, foundItems);
+                                break;
+                            case "3":
+                                actionMessage = "\nYou follow the river and find nothing of interest, eventually coming to a waterfall. You turn back.";
+                                break;
+                            case "4":
+                                actionMessage = "\nYou use the bucket to collect some water from the river.";
+                                inventory = removeItem("bucket", inventory);
+                                inventory = addItem("water bucket", inventory, foundItems);
+                        }
+                        }
+                        
+                    } else {
+                        switch (input) {
+                        case "1":
+                            actionMessage = "\nYou go back inside the room.";
+                            currentRoom = "room2";
+                            break;
+                        case "2":
+                            subRoom = "river";
+                            actionMessage = "\nYou head to the sound of the water.";
+                            break;
+                        case "3":
+                            actionMessage = "\nYou climb a tree and don't see much, the sky is far too cloudy and you can see fog in the distance obscuring your view. You climb back down.";
+                            break;
+                        case "4":
+                            subRoom = "stump";
+                            actionMessage = "\nYou go to the stump.";
+                            break;
+                        }
+                    }
+                    
+                    break;
+
         }
 
         // Now generate response based on current state
@@ -271,6 +325,32 @@ public class Main {
                 opts = setOpts(opts, "Leave the room","Look out the window","Look at the paper","Look under the table", "Look in the dirt");
                 response += "\nYou land in a room, but instead of white walls, the walls are now made from wood, and the floor appears to be made from dirt. There is a door, a window, and a table with a small piece of paper left on it. The window has no glass.";
                 response = addOpts(response, opts);
+                break;
+            case "forest1":
+                if (subRoom.equals("stump")) {
+                } else if (subRoom.equals("river")) {
+                    if (containsVal("water bucket", inventory, inventory)) {
+                        opts = setOpts(opts, "Go back to your clearing", "Grab a stone", "Follow the river");
+                        response += "\nYou see a thin, yet fast, stream. The water is clear enough to see smooth stones at the bottom. At least you've grabbed some water now.";
+                        response = addOpts(response, opts);
+                    } else if (containsVal("bucket", inventory, inventory) && !containsVal("water bucket", inventory, inventory)) {
+                        opts = setOpts(opts, "Go back to your clearing", "Grab a stone", "Follow the river", "Use the bucket to grab water");
+                        response += "\nYou see a thin, yet fast, stream. The water is clear enough to see smooth stones at the bottom. You could probably use the bucket to grab some of the water.";
+                        response = addOpts(response, opts);
+                    } else {
+                        opts = setOpts(opts, "Go back to your clearing", "Grab a stone", "Follow the river");
+                        response += "\nYou find  and see a thin, yet fast, stream. The water is clear enough to see smooth stones at the bottom. If only you had something to grab the water with...";
+                        response = addOpts(response, opts);
+                    }
+
+                } else {
+                    opts = setOpts(opts, "Go inside", "Head to the water", "Climb a tree", "Go to the stump");
+                    response += "\nYou step outside into a forest. The trees are all thin and spaced, the ground coated in moss and rocks. You head water flowing in the distance.\nThe clearing around the small hut has a small stump, a handful of trees, and nothing else.";
+                    response = addOpts(response, opts);
+                    break;
+                }
+            case "river":
+                
                 break;
         }
 
