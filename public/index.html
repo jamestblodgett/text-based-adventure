@@ -6,8 +6,26 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+  <div class ="background-section">
+    <img src="images/forest.jpg" alt="Background Image" class="background-image">
+  </div>
 
 <h1>Text-based Adventure Game</h1>
+
+<button id="settings-btn" onclick="toggleSettings()">Settings</button>
+
+<div id="settings-menu" >
+  <h2>Color Settings</h2>
+  <label for="text-color">H1 Text Color:</label>
+  <input type="color" id="text-color"><br><br>
+  <label for="primary">Body Text Color:</label>
+  <input type="color" id="primary"><br><br>
+  <label for="highlight">Highlight Color:</label>
+  <input type="color" id="highlight"><br><br>
+  <label for="input-box">Input Box Color:</label>
+  <input type="color" id="input-box"><br><br>
+  <button onclick="toggleSettings()">Close</button>
+</div>
 
 <div id="input-area">
   <input type="text" id="user-input" placeholder="Enter your command..." autofocus>
@@ -48,6 +66,36 @@
 
 <script>
 let gameStarted = false;
+
+function toggleSettings() {
+  const menu = document.getElementById('settings-menu');
+  if (menu.style.display === 'none') {
+    loadColors();
+    menu.style.display = 'block';
+  } else {
+    menu.style.display = 'none';
+  }
+}
+
+function loadColors() {
+  const root = document.documentElement;
+  document.getElementById('text-color').value = getComputedStyle(root).getPropertyValue('--text-color').trim();
+  document.getElementById('primary').value = getComputedStyle(root).getPropertyValue('--primary').trim();
+  document.getElementById('highlight').value = getComputedStyle(root).getPropertyValue('--highlight').trim();
+  document.getElementById('input-box').value = getComputedStyle(root).getPropertyValue('--input-box').trim();
+}
+
+function updateColor(varName, value) {
+  document.documentElement.style.setProperty(varName, value);
+}
+
+// Add event listeners
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('text-color').addEventListener('input', (e) => updateColor('--text-color', e.target.value));
+  document.getElementById('primary').addEventListener('input', (e) => updateColor('--primary', e.target.value));
+  document.getElementById('highlight').addEventListener('input', (e) => updateColor('--highlight', e.target.value));
+  document.getElementById('input-box').addEventListener('input', (e) => updateColor('--input-box', e.target.value));
+});
 
 function sendInput() {
   const input = document.getElementById('user-input').value.trim();
