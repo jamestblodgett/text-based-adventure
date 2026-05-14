@@ -42,5 +42,5 @@ echo Opening browser...
 start http://localhost:4567/index.html
 
 echo.
-echo Server is running. Close this window to stop the server.
+echo Server is running. Close the terminal window to stop the server.
 pause

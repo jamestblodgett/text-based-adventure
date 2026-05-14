@@ -68,36 +68,38 @@ public class Main {
         foundItems = inventoryDebug(foundItems);
         
         // Handle global commands first
-        if (true) {
-            if (input.startsWith("skipto:")) {
-                String targetRoom = input.substring(input.indexOf(":") + 1).trim();
-                if (!targetRoom.isEmpty()) {
-                    currentRoom = targetRoom;
-                    subRoom = "";
-                    response = "Skipping to " + targetRoom + ".";
-                } else {
-                    response = "Skipto command requires a room name, e.g. 'skipto: room1'.";
-                }
-            } else if (input.startsWith("additem:")) {
-                String item = input.substring(input.indexOf(":") + 1).trim();
-                if (!item.isEmpty()) {
-                    inventory = addItem(item, inventory, foundItems);
-                    response = "Item added to inventory: " + item;
-                } else {
-                    response = "additem command requires an item name, e.g. 'addItem: sword'.";
-                }
-            } else if (input.equals("inventory") || input.equals("i") || input.equals("check inventory")) {
-                inventory = inventoryDebug(inventory);
-                response = "You are carrying:\n " + String.join(",\n ", inventory);
-            } else if (input.equals("foundItems") ||  input.equals("f")) {
-                foundItems = inventoryDebug(foundItems);
-                response = "Items you've found:\n " + String.join(",\n ", foundItems);
-            } else if (input.equals("help") || input.equals("h") || input.equals("?")) {
-                response = "Welcome to the text-adventure game!\nWhen you play, you will receive a prompt. Based on this prompt, you can enter a response in the box, and the game will continue based on what you entered. For example:\n\nYou are in a dark room with a green door and a red door. What do you do?\n1) Open the green door\n2) Open the red door\n3) Cry\n4) Check your inventory - this is always available\n\nIf you enter \"1\", the game will continue with you going through the green door. You can always enter \"inventory\" to check your inventory, \"foundItems\" to check your total found items, \"Help\", which takes you to this page, or \"Hard-Reset\", which will reset the game. Don't do that.";
-            } else if (input.equals("hard-reset")) {
-                resetGame();
-                response = "Game reset. You are back at the start.";
+        if (input.startsWith("room:")) {
+            String targetRoom = input.substring(input.indexOf(":") + 1).trim();
+            if (!targetRoom.isEmpty()) {
+                currentRoom = targetRoom;
+                subRoom = "";
+                response = "Skipping to " + targetRoom + ".";
+            } else {
+                response = "The current room is " + currentRoom + ".";
             }
+        } else if (input.startsWith("additem:")) {
+            String item = input.substring(input.indexOf(":") + 1).trim();
+            if (!item.isEmpty()) {
+                inventory = addItem(item, inventory, foundItems);
+                response = "Item added to inventory: " + item;
+            } else {
+                response = "additem command requires an item name, e.g. 'addItem: sword'.";
+            }
+        } else if (input.equals("inventory") || input.equals("i") || input.equals("check inventory")) {
+            inventory = inventoryDebug(inventory);
+            response = "You are carrying:\n " + String.join(",\n ", inventory);
+        } else if (input.equals("foundItems") ||  input.equals("f") || input.equals("found")) {
+            foundItems = inventoryDebug(foundItems);
+            response += "Item's you've found:";
+            for (int i = 0; i < foundItems.length; i++){
+                if (foundItems[i].equals("") || foundItems[i].equals("-")) break;
+                response += "\n" + foundItems[i];
+            }
+        } else if (input.equals("help") || input.equals("h") || input.equals("?")) {
+            response = "Welcome to the text-adventure game!\nWhen you play, you will receive a prompt. Based on this prompt, you can enter a response in the box, and the game will continue based on what you entered. For example:\n\nYou are in a dark room with a green door and a red door. What do you do?\n1) Open the green door\n2) Open the red door\n3) Cry\n4) Check your inventory - this is always available\n\nIf you enter \"1\", the game will continue with you going through the green door. You can always enter \"inventory\" to check your inventory, \"foundItems\" to check your total found items, \"Help\", which takes you to this page, or \"Hard-Reset\", which will reset the game. Don't do that.";
+        } else if (input.equals("hard-reset")) {
+            resetGame();
+            response = "Game reset. You are back at the start.";
         }
 
         // Process input based on current room
@@ -203,7 +205,7 @@ public class Main {
             case "room2":
                 switch(input) {
                     case "1":
-                        actionMessage = "\nYou leave the room";
+                        actionMessage = "\nYou leave the room and step outside into a forest.";
                         currentRoom = "forest1";
                         break;
                     case "2":
@@ -232,48 +234,132 @@ public class Main {
                         break;
                     }
                     break;
-                case "forest1":
-                    if (subRoom.equals("stump")) {
-                    } else if (subRoom.equals("river")) {
-                        if (containsVal("bucket", inventory, foundItems)) {
+            case "forest1":
+                if (subRoom.equals("stump")) {
+                    if (!containsVal("axe", inventory, foundItems) && !containsVal("bucket", inventory, foundItems)) {
+                        switch (input) {
+                            case "1":
+                                actionMessage = "\nYou go back to the clearing.";
+                                subRoom = "";
+                                break;
+                            case "2":
+                                actionMessage = "\nYou sit on the stump, and you take a moment to rest.";
+                                break;
+                        }
+                    } else {
+                        if (!containsVal("bucket", inventory, foundItems)) {
                             switch (input) {
                             case "1":
                                 actionMessage = "\nYou go back to the clearing.";
                                 subRoom = "";
                                 break;
                             case "2":
-                                actionMessage = "\nYou pick up a smooth stone from the riverbed.";
-                                inventory = addItem("smooth stone", inventory, foundItems);
+                                actionMessage = "\nYou sit on the stump, and you take a moment to rest.";
                                 break;
                             case "3":
-                                actionMessage = "\nYou follow the river and find nothing of interest, eventually coming to a waterfall. You turn back.";
+                                actionMessage = "\nYou dig out the stump with your axe and find a metal bucket. You put the stump back.";
+                                inventory = addItem("bucket", inventory, foundItems);
                                 break;
                             case "4":
-                                actionMessage = "\nYou use the bucket to collect some water from the river.";
-                                inventory = removeItem("bucket", inventory);
-                                inventory = addItem("water bucket", inventory, foundItems);
-                        }
-                        }
-                        
-                    } else {
-                        switch (input) {
-                        case "1":
-                            actionMessage = "\nYou go back inside the room.";
-                            currentRoom = "room2";
-                            break;
-                        case "2":
-                            subRoom = "river";
-                            actionMessage = "\nYou head to the sound of the water.";
-                            break;
-                        case "3":
-                            actionMessage = "\nYou climb a tree and don't see much, the sky is far too cloudy and you can see fog in the distance obscuring your view. You climb back down.";
-                            break;
-                        case "4":
-                            subRoom = "stump";
-                            actionMessage = "\nYou go to the stump.";
-                            break;
+                                if (containsVal("wood", inventory, inventory)) {
+                                    actionMessage = "\nYou chop some wood.";
+                                    inventory = addItem("chopped wood", inventory, foundItems);
+                                    inventory = removeItem("wood", inventory);
+                                } else {
+                                    actionMessage = "\nYou don't have any wood to chop.";
+                                }
+                                break;
+                            }
+                        } else {
+                            switch (input) {
+                            case "1":
+                                actionMessage = "\nYou go back to the clearing.";
+                                subRoom = "";
+                                break;
+                            case "2":
+                                actionMessage = "\nYou sit on the stump, and you take a moment to rest.";
+                                break;
+                            case "3":
+                                if (containsVal("wood", inventory, inventory)) {
+                                    actionMessage = "\nYou chop some wood.";
+                                    inventory = addItem("chopped wood", inventory, foundItems);
+                                    inventory = removeItem("wood", inventory);
+                                } else {
+                                    actionMessage = "\nYou don't have any wood to chop.";
+                                }
+                                break;
+                             }
                         }
                     }
+                } else if (subRoom.equals("river")) {
+                    if (containsVal("bucket", inventory, foundItems)) {
+                        switch (input) {
+                        case "1":
+                            actionMessage = "\nYou go back to the clearing.";
+                            subRoom = "";
+                            break;
+                        case "2":
+                            actionMessage = "\nYou pick up a smooth stone from the riverbed.";
+                            inventory = addItem("smooth stone", inventory, foundItems);
+                            break;
+                        case "3":
+                            actionMessage = "\nYou follow the river and find nothing of interest, eventually coming to a waterfall. You turn back.";
+                            break;
+                        case "4":
+                            actionMessage = "\nYou use the bucket to collect some water from the river.";
+                            inventory = removeItem("bucket", inventory);
+                            inventory = addItem("water bucket", inventory, foundItems);
+                            break;
+                        }
+                    } else if (containsVal("water bucket", inventory, foundItems)) {
+                         switch (input) {
+                        case "1":
+                            actionMessage = "\nYou go back to the clearing.";
+                            subRoom = "";
+                            break;
+                        case "2":
+                            actionMessage = "\nYou pick up a smooth stone from the riverbed.";
+                            inventory = addItem("smooth stone", inventory, foundItems);
+                            break;
+                        case "3":
+                            actionMessage = "\nYou follow the river and find nothing of interest, eventually coming to a waterfall. You turn back.";
+                            break;
+                         }
+                        } else {
+                            switch (input){
+                                case "1":
+                                    actionMessage = "\nYou go back to the clearing.";
+                                    subRoom = "";
+                                    break;
+                                case "2":
+                                    actionMessage = "\nYou pick up a smooth stone from the riverbed.";
+                                    inventory = addItem("smooth stone", inventory, foundItems);
+                                    break;
+                                case "3":
+                                    actionMessage = "\nYou follow the river and find nothing of interest, eventually coming to a waterfall. You turn back.";
+                                    break;
+                            }
+                        }
+                        
+                } else {
+                    switch (input) {
+                    case "1":
+                        actionMessage = "\nYou go back inside the room.";
+                        currentRoom = "room2";
+                        break;
+                    case "2":
+                        subRoom = "river";
+                        actionMessage = "\nYou head to the sound of the water.";
+                        break;
+                    case "3":
+                        actionMessage = "\nYou climb a tree and don't see much, the sky is far too cloudy and you can see fog in the distance obscuring your view. You climb back down.";
+                        break;
+                    case "4":
+                        subRoom = "stump";
+                        actionMessage = "\nYou go to the stump.";
+                        break;
+                    }
+                }
                     
                     break;
 
@@ -328,6 +414,21 @@ public class Main {
                 break;
             case "forest1":
                 if (subRoom.equals("stump")) {
+                    if (!containsVal("axe", inventory, foundItems) && !containsVal("bucket", inventory, foundItems)) {
+                        opts = setOpts(opts,"Go back to your clearing", "Sit on the stump");
+                        response += "\nThe stump is old and mossy, but it looks as though it was placed here intentionally. Odd.";
+                        response = addOpts(response, opts);
+                    } else {
+                        if (!containsVal("bucket", inventory, foundItems)) {
+                            opts = setOpts(opts,"Go back to your clearing", "Sit on the stump", "Dig out the stump", "Chop wood");
+                            response += "\nThe stump is old and mossy, but it looks as though it was placed here intentionally. Odd. Maybe you could dig it out with your axe?";
+                            response = addOpts(response, opts);
+                        } else {
+                            opts = setOpts(opts,"Go back to your clearing", "Sit on the stump", "Chop wood");
+                            response += "\nThe stump is old and mossy, but sturdy.";
+                            response = addOpts(response, opts);
+                        }
+                    }
                 } else if (subRoom.equals("river")) {
                     if (containsVal("water bucket", inventory, inventory)) {
                         opts = setOpts(opts, "Go back to your clearing", "Grab a stone", "Follow the river");
@@ -345,12 +446,10 @@ public class Main {
 
                 } else {
                     opts = setOpts(opts, "Go inside", "Head to the water", "Climb a tree", "Go to the stump");
-                    response += "\nYou step outside into a forest. The trees are all thin and spaced, the ground coated in moss and rocks. You head water flowing in the distance.\nThe clearing around the small hut has a small stump, a handful of trees, and nothing else.";
+                    response += "\nThe trees are all thin and spaced, the ground coated in moss and rocks. You head water flowing in the distance.\nThe clearing around the small hut has a small stump, a handful of trees, and nothing else.";
                     response = addOpts(response, opts);
                     break;
                 }
-            case "river":
-                
                 break;
         }
 
@@ -358,7 +457,7 @@ public class Main {
     }
 
     // Game Helper classes
-    private static void resetGame() {
+    public static void resetGame() {
         currentRoom = "start";
         subRoom = "";
         inventory = new String[9];
