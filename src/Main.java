@@ -13,7 +13,8 @@ public class Main {
     private static String subRoom = "";
     private static String [] inventory = new String[9];
     private static String [] foundItems = new String[30];
-    private static String [] opts = new String[5];
+    private static String [] opts = new String[6];
+    private static String endMessage = "You have been defeated, and your run is over.\nTHE END\n\nTo play again, enter 'hard-reset' into the box above, or reload the page.";
 
     // ---------------------------------------------
     // Input/Output Handling. Main function.       |
@@ -219,8 +220,8 @@ public class Main {
                             actionMessage = "\nThere is nothing left under the table.";
                         } else {
                             actionMessage = "\nYou look under the table and find an iron coin.";
-                            inventory = addItem("iron coin", inventory, foundItems);
-                            foundItems = addItem("room2-underTable-Coin", foundItems, foundItems);
+                            inventory = addItem("Iron Coin", inventory);
+                            foundItems = addItem("room2-underTable-Coin", foundItems);
                         }
                         break;
                     case "5":
@@ -228,8 +229,8 @@ public class Main {
                             actionMessage = "\nYou look in the dirt but don't find anything else of interest.";
                         } else {
                             actionMessage = "\nYou look in the dirt and find a small Iron Coin.";
-                            inventory = addItem("Iron Coin", inventory, foundItems);
-                            foundItems = addItem("room2-dirt-Coin", foundItems, foundItems);
+                            inventory = addItem("Iron Coin", inventory);
+                            foundItems = addItem("room2-dirt-Coin", foundItems);
                         }
                         break;
                     }
@@ -244,6 +245,9 @@ public class Main {
                                 break;
                             case "2":
                                 actionMessage = "\nYou sit on the stump, and you take a moment to rest.";
+                                break;
+                            case "3":
+                                actionMessage = "\nYou try to dig it out with your crowbar to no avail.";
                                 break;
                         }
                     } else {
@@ -303,7 +307,8 @@ public class Main {
                             inventory = addItem("smooth stone", inventory, foundItems);
                             break;
                         case "3":
-                            actionMessage = "\nYou follow the river and find nothing of interest, eventually coming to a waterfall. You turn back.";
+                            actionMessage = "\nYou follow the river and find nothing of interest, eventually you reach a waterfall, where you see an old axe sticking out between two rocks. You take it and turn back.";
+                            inventory = addItem("axe", inventory, foundItems);
                             break;
                         case "4":
                             actionMessage = "\nYou use the bucket to collect some water from the river.";
@@ -322,8 +327,8 @@ public class Main {
                             inventory = addItem("smooth stone", inventory, foundItems);
                             break;
                         case "3":
-                            actionMessage = "\nYou follow the river and find nothing of interest, eventually coming to a waterfall. You turn back.";
-                            break;
+                            actionMessage = "\nYou follow the river and find nothing of interest, eventually you reach a waterfall, where you see an old axe sticking out between two rocks. You take it and turn back.";
+                            inventory = addItem("axe", inventory, foundItems);
                          }
                         } else {
                             switch (input){
@@ -336,8 +341,8 @@ public class Main {
                                     inventory = addItem("smooth stone", inventory, foundItems);
                                     break;
                                 case "3":
-                                    actionMessage = "\nYou follow the river and find nothing of interest, eventually coming to a waterfall. You turn back.";
-                                    break;
+                                    actionMessage = "\nYou follow the river and find nothing of interest, eventually you reach a waterfall, where you see an old axe sticking out between two rocks. You take it and turn back.";
+                                    inventory = addItem("axe", inventory, foundItems);
                             }
                         }
                         
@@ -358,10 +363,52 @@ public class Main {
                         subRoom = "stump";
                         actionMessage = "\nYou go to the stump.";
                         break;
+                    case "5":
+                        room = "forest2";
+                        actionMessage = "\nYou travel off into the forest.";
                     }
                 }
-                    
-                    break;
+                break;
+            case "forest2":
+                if (subRoom.equals("wagon")){
+                    switch (input) {
+                        case "1":
+                            actionMessage = "\nYou leave the wagon.";
+                            subRoom = "";
+                            break;
+                        case "2":
+                            actionMessage = "\nYou climb into the wagon, pushing through blindly in the darkness, and drop your crowbar. Something shifts in the darkness, and the entrance collapses. You aren't alone.";
+                            subRoom = "wagonClosed";
+                            inventory = removeItem("crowbar", inventory);
+                            break;
+                    }
+                } else if (subRoom.equals("wagonClosed")) {
+                    if (containsVal("axe", inventory, inventory)){
+                        switch (input) {
+                            case "1":
+                                actionMessage = "\nYou attempt to punch the wall, but only hurt your hand. You feel a sharp pain, and the dark consumes you.";
+                                response += endMessage;
+                                break;
+                            case "2":
+                                actionMessage = "\n"
+                        }
+                    }
+                } else {
+                    switch (input){
+                        case "1":
+                            currentRoom = "forest1";
+                            actionMessage = "\nYou return to your clearing.";
+                            break;
+                        case "2":
+                            subRoom = "wagon";
+                            actionMessage = "\nYou decide to search the wagon.";
+                            break;
+                        case "3":
+                            currentRoom = "forest3";
+                            actionMessage = "\nYou go deeper into the forest.";
+                            break;
+                    }
+                }
 
         }
 
@@ -389,7 +436,8 @@ public class Main {
                     }
                     response = addOpts(response, opts);
                 } else if (subRoom.equals("window")) {
-                    response += "\nOutside the window you see a desert, with small dry bushes and nothing else remotely alive. There is a crowbar on the ground, just out of reach.";
+                    response += "\nOutside the window you see a desert, with small dry bushes and nothing else remotely alive.";
+                    if (!containsVal("crowbar", inventory, foundItems)) response += "  There is a crowbar on the ground, just out of reach.";
                     if (containsVal("string", inventory, foundItems) && !containsVal("crowbar", inventory, foundItems)) {
                         opts = setOpts(opts, "Go back", "Grab the crowbar (String)");
                     } else {
@@ -415,7 +463,7 @@ public class Main {
             case "forest1":
                 if (subRoom.equals("stump")) {
                     if (!containsVal("axe", inventory, foundItems) && !containsVal("bucket", inventory, foundItems)) {
-                        opts = setOpts(opts,"Go back to your clearing", "Sit on the stump");
+                        opts = setOpts(opts,"Go back to your clearing", "Sit on the stump", "Dig out the stump");
                         response += "\nThe stump is old and mossy, but it looks as though it was placed here intentionally. Odd.";
                         response = addOpts(response, opts);
                     } else {
@@ -440,17 +488,39 @@ public class Main {
                         response = addOpts(response, opts);
                     } else {
                         opts = setOpts(opts, "Go back to your clearing", "Grab a stone", "Follow the river");
-                        response += "\nYou find  and see a thin, yet fast, stream. The water is clear enough to see smooth stones at the bottom. If only you had something to grab the water with...";
+                        response += "\nYou see a thin, yet fast, stream. The water is clear enough to see smooth stones at the bottom. If only you had something to grab the water with...";
                         response = addOpts(response, opts);
                     }
 
                 } else {
-                    opts = setOpts(opts, "Go inside", "Head to the water", "Climb a tree", "Go to the stump");
-                    response += "\nThe trees are all thin and spaced, the ground coated in moss and rocks. You head water flowing in the distance.\nThe clearing around the small hut has a small stump, a handful of trees, and nothing else.";
+                    opts = setOpts(opts, "Go inside", "Head to the water", "Climb a tree", "Go to the stump", "Explore the forest");
+                    response += "\nThe trees are all thin, the ground coated in moss and rocks. You hear water flowing in the distance.\nThe clearing around the small hut has a small stump, a handful of trees, and nothing else.";
                     response = addOpts(response, opts);
                     break;
                 }
                 break;
+                case "forest2":
+                    if (subRoom.equals("wagon")){
+                        opts = setOpts("Leave the Wagon", "Go in anyway");
+                        response += "\nThe interior of the wagon is dark. Too dark. The light doesn't seem to be able to penetrate it.";
+                        response = addOpts(response, opts);
+                    } else if (subRoom.equals("wagonClosed")) {
+                        if (containsVal("axe", inventory, inventory)){
+                            if (containsVal("water bucket")){
+                                opts = setOpts("Punch the wall", "Try to climb out", "Hit the darkness (axe)", "Hit the wall (axe)", "Spash the darkness (water bucket)");
+                            } else {
+                                opts = setOpts("Punch the wall", "Try to climb out", "Hit the darkness (axe)", "Hit the wall (axe)");
+                            }
+                        } else if (containsVal("water bucket")){
+                            opts = setOpts("Punch the wall", "Try to climb out", "Splash the darkness (water bucket)");
+                        }
+                        response = "";
+                        break;
+                    } else {
+                        opts = setOpts(opts, "Go back to the clearing", "Search the Wagon", "Go Deeper");
+                        response += "\nThe path is dark, the light from above obscured by the thick tree-cover. There is an old, broken, covered wagon on the side of the path.";
+                        reponse = addOpts(response, opts);
+                    }
         }
 
         return response;
@@ -568,6 +638,29 @@ public class Main {
         foundItems = inventoryDebug(foundItems);
         
         return inventory;
+    }
+
+    public static String[] addItem(String item, String[] array) {
+        //This is to add to only one area, not the other. Also allows for multiple of the same object.
+        
+        // Find an empty slot in inventory and add the item
+        for (int i = 0; i < inventory.length; i++) {
+            if (array[i].equals("-")) {
+                array[i] = item;
+                break;
+            }
+        }
+
+        return array;
+    }
+
+    public static String[] addOption(String opt, String[] opts){
+        for (int i = 0; i < opts.length; i++){
+            if (opts[i].equals("")){
+                opts[i] = opt;
+            }
+        }
+        return opts;
     }
 
     private static class GameInput {
